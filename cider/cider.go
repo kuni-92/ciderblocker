@@ -44,20 +44,38 @@ func CheckFormat(cider string) ([]int, int, error) {
 
 // GetNetworkAddress retrieves a network address
 // from an IP address and subnet mask
-func GetNetworkAddress(addr []int, mask int) string {
+func GetNetworkAddress(addr []int, subnet []int) []int {
 
-	getSubnetmask(mask)
 	naddr := make([]int, 4)
 
-	for octet := 0; octet < len(naddr); octet++ {
-		naddr[octet] = addr[octet]
-
+	for index := 0; index < len(naddr); index++ {
+		noctet := addr[index]
+		noctet &= subnet[index]
+		naddr[index] = noctet
 	}
-	return ""
+	return naddr
 }
 
-// getSubnetmask returns a slice of the subnet mask
-func getSubnetmask(mask int) []int {
+// GetBroadcastAddress retrieves a broadcast address
+// from an IP address and subnet mask
+func GetBroadcastAddress(addr []int, subnet []int) []int {
+	baddr := make([]int, 4)
+
+	for index := 0; index < len(baddr); index++ {
+		boctet := addr[index]
+		for bit := 0; bit < 8; bit++ {
+			sbit := subnet[index] & (0x01 << bit)
+			if sbit == 0 {
+				boctet |= (0x01 << bit)
+			}
+		}
+		baddr[index] = boctet
+	}
+	return baddr
+}
+
+// GetSubnetmask returns a slice of the subnet mask
+func GetSubnetmask(mask int) []int {
 	maskbit := make([]int, 4)
 	index := 0
 	bitofset := 0

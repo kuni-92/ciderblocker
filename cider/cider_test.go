@@ -60,10 +60,68 @@ func Test_getSubnetmask(t *testing.T) {
 	}
 
 	for index, test := range tests {
-		res := getSubnetmask(test.param)
+		res := GetSubnetmask(test.param)
 
 		if false == reflect.DeepEqual(res, test.expect) {
 			t.Errorf("error subnet mismatch. testindex:%d, expect:%d, test:%d", index, test.expect, res)
+		}
+	}
+}
+
+func Test_GetNetworkAddress(t *testing.T) {
+	type testdata struct {
+		addr   []int
+		subnet []int
+		expect []int
+	}
+
+	tests := []testdata{
+		{
+			[]int{192, 168, 10, 111},
+			[]int{255, 255, 255, 0},
+			[]int{192, 168, 10, 0},
+		},
+		{
+			[]int{192, 168, 255, 111},
+			[]int{255, 255, 128, 0},
+			[]int{192, 168, 128, 0},
+		},
+	}
+
+	for index, test := range tests {
+		naddr := GetNetworkAddress(test.addr, test.subnet)
+
+		if false == reflect.DeepEqual(naddr, test.expect) {
+			t.Errorf("error subnet mismatch. testindex:%d, expect:%d, test:%d", index, test.expect, naddr)
+		}
+	}
+}
+
+func Test_GetBroadcastAddress(t *testing.T) {
+	type testdata struct {
+		addr   []int
+		subnet []int
+		expect []int
+	}
+
+	tests := []testdata{
+		{
+			[]int{192, 168, 10, 111},
+			[]int{255, 255, 255, 0},
+			[]int{192, 168, 10, 255},
+		},
+		{
+			[]int{192, 168, 255, 111},
+			[]int{255, 255, 128, 0},
+			[]int{192, 168, 255, 255},
+		},
+	}
+
+	for index, test := range tests {
+		naddr := GetBroadcastAddress(test.addr, test.subnet)
+
+		if false == reflect.DeepEqual(naddr, test.expect) {
+			t.Errorf("error subnet mismatch. testindex:%d, expect:%d, test:%d", index, test.expect, naddr)
 		}
 	}
 }

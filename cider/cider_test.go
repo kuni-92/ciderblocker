@@ -1,6 +1,7 @@
 package cider
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -42,6 +43,27 @@ func Test_CheckFormat(t *testing.T) {
 			if err == nil {
 				t.Errorf("error mismatch. testindex:%d", ii)
 			}
+		}
+	}
+}
+
+func Test_getSubnetmask(t *testing.T) {
+	type testdata struct {
+		param  int
+		expect []int
+	}
+
+	tests := []testdata{
+		{32, []int{255, 255, 255, 255}},
+		{0, []int{0, 0, 0, 0}},
+		{15, []int{255, 254, 0, 0}},
+	}
+
+	for index, test := range tests {
+		res := getSubnetmask(test.param)
+
+		if false == reflect.DeepEqual(res, test.expect) {
+			t.Errorf("error subnet mismatch. testindex:%d, expect:%d, test:%d", index, test.expect, res)
 		}
 	}
 }

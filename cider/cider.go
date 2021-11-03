@@ -19,7 +19,7 @@ func CheckFormat(cider string) ([]int, int, error) {
 		return nil, 0, errors.New("error: format error")
 	}
 	addresses[len(addresses)-1] = buf[0]
-	block := buf[1]
+	m := buf[1]
 
 	addr := make([]int, 4)
 	for index := 0; index < len(addresses); index++ {
@@ -32,12 +32,43 @@ func CheckFormat(cider string) ([]int, int, error) {
 		}
 		addr[index] = v
 	}
-	b, err := strconv.Atoi(block)
+	mask, err := strconv.Atoi(m)
 	if err != nil {
 		return nil, 0, errors.New("error: not number")
 	}
-	if b < 0 || 32 < b {
+	if mask < 0 || 32 < mask {
 		return nil, 0, errors.New("error: out of range")
 	}
-	return addr, b, nil
+	return addr, mask, nil
+}
+
+// GetNetworkAddress retrieves a network address
+// from an IP address and subnet mask
+func GetNetworkAddress(addr []int, mask int) string {
+
+	getSubnetmask(mask)
+	naddr := make([]int, 4)
+
+	for octet := 0; octet < len(naddr); octet++ {
+		naddr[octet] = addr[octet]
+
+	}
+	return ""
+}
+
+// getSubnetmask returns a slice of the subnet mask
+func getSubnetmask(mask int) []int {
+	maskbit := make([]int, 4)
+	index := 0
+	bitofset := 0
+	for ofset := 0; ofset < mask; ofset++ {
+		maskbit[index] |= (0x01 << (7 - bitofset))
+		if bitofset < 7 {
+			bitofset++
+		} else {
+			bitofset = 0
+			index++
+		}
+	}
+	return maskbit
 }
